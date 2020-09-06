@@ -45,7 +45,8 @@ fn main() {
       let cor = correlation(buffer);
       let peak = get_peak(cor);
       let letter = hz_to_pitch(peak);
-      println!("{:?}", letter)
+      let off_by = hz_to_cents_error(peak);
+      println!("{}, off by {}", letter, off_by)
     }
   }
 }
@@ -98,6 +99,17 @@ fn hz_to_pitch(hz: f32) -> String {
     // fun fact, this format string will be type checked at compile
     // time.
     format!("{: <2}{}", name, octave)
+}
+
+pub fn hz_to_cents_error(hz: f32) -> f32 {
+    let midi_number = hz_to_midi_number(hz);
+    let cents = (midi_number % 1.0) * 100.0;
+    if cents >= 50.0 {
+        cents - 100.0
+    }
+    else {
+        cents
+    }
 }
 
 fn correlation(signal: &[f32]) -> Vec<f32> {
